@@ -13,20 +13,16 @@ class Transaction:
 class Account:
     def __init__(self, name):
         self.name = name
-        self.owe = 0
-        self.othersOwed = 0
+        self.balance = 0
         self.transactions = []
 
     def addTransaction(self, transaction):
         self.transactions.append(transaction)
 
-        accountName = self.name
-        transactionValue = transaction.amount
-
-        if transaction.fromAccount == accountName:
-            self.owe = self.owe + transactionValue
-        elif transaction.toAccount == accountName:
-            self.othersOwed = self.othersOwed + transactionValue
+        if transaction.fromAccount == self.name:
+            self.balance -= transaction.amount
+        elif transaction.toAccount == self.name:
+            self.balance += transaction.amount
 
 def readCSV():
     with open(FILENAME, mode = 'r') as file:
@@ -35,8 +31,8 @@ def readCSV():
     
 def listAll(accounts):
     for name, account in accounts.items():
-        print("Account for " + name + " owes: " + str(round(account.owe, 2)) + " and is owed: " + str(round(account.othersOwed, 2)))
-
+        print(f"Account for {name} {'is owed' if account.balance > 0 else 'owes'} {abs(account.balance):.2f}")
+        
 def listAccount(accounts, name):
     if name not in accounts:
         print("Account not found!")
